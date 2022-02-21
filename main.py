@@ -1,8 +1,15 @@
-print('hi all')
+import telebot
+from settings import TOKEN
 
-print('hii')
-print('hello world')
 
-print('hi')
+bot = telebot.TeleBot(TOKEN)
 
-print('hello')
+
+@bot.message_handler(content_types=['text'])
+def get_text_messages(message):
+    username = message.from_user.username
+    msg = f'Кто здесь. {username}'
+    bot.send_message(message.from_user.id, msg)
+
+
+bot.polling()
