@@ -1,0 +1,8 @@
+{
+  "name": "test_project",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "bootstrap": "^5.1.3"
+  }
+}
