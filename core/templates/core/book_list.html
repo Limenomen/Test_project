@@ -8,7 +8,7 @@
     <!-- Bootstrap CSS -->
     <link href="/node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
 
-    <title>{{ title }}</title>
+    <title>Hello, world!</title>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -37,7 +37,34 @@
     </div>
 </nav>
 
-{{ info }}
+<form class="row g-3">
+    <div class="col-auto">
+        <input type="text" class="form-control" placeholder="Название" name="name" value="{{ request.GET.name }}">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Название</th>
+        <th scope="col">Количество страниц</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {% for book in object_list %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td><a href="{% url 'core:book_detail' book.pk %}">{{ book.name }}</a></td>
+            <td>{{ book.pages|default:" - " }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
 </body>
