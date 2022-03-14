@@ -1,13 +1,10 @@
-from django.http import HttpResponseNotFound
-from django.shortcuts import render, get_object_or_404
-from django.views.decorators.http import require_http_methods
 from django.views.generic import TemplateView, ListView, DetailView
 
 import core.models
 
 
 class TitleMixin:
-    title = None
+    title: str = None
 
     def get_title(self):
         return self.title
@@ -31,7 +28,9 @@ class IndexView(TitleMixin, TemplateView):
         return 'Главная страница'
 
 
-class Books(ListView):
+class Books(TitleMixin, ListView):
+    title = 'Книги'
+
     def get_queryset(self):
         name = self.request.GET.get('name')
         queryset = core.models.Book.objects.all()
@@ -40,5 +39,8 @@ class Books(ListView):
         return queryset
 
 
-class BookDetail(DetailView):
+class BookDetail(TitleMixin, DetailView):
     queryset = core.models.Book.objects.all()
+
+    def get_title(self):
+        return str(self.get_object())
