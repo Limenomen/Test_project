@@ -1,27 +1,29 @@
 {% extends 'core/index.html' %}
 
 {% block content %}
-{% include 'core/search_books_include.html' %}
+    {% include 'core/search_books_include.html' %}
 
-<table class="table">
-    <thead>
-    <tr>
-        <th scope="col">#</th>
-        <th scope="col">Название</th>
-        <th scope="col">Количество страниц</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for book in object_list %}
+    <table class="table">
+        <thead>
         <tr>
-            <th scope="row">{{ forloop.counter }}</th>
-            <td><a href="{% url 'core:book_detail' book.pk %}">{{ book.name|capfirst }}</a></td>
-            <td>{{ book.pages|default:" - " }}</td>
+            <th scope="col">#</th>
+            <th scope="col">Название</th>
+            <th scope="col">Количество страниц</th>
         </tr>
-    {% empty %}
-        <h4>Не найдено</h4>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        {% for book in object_list %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td><a href="{% url 'core:book_detail' book.pk %}">{{ book.name|capfirst }}</a></td>
+                <td>{{ book.pages|default:" - " }}</td>
+            </tr>
+        {% empty %}
+            <h4>Не найдено</h4>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'core:book_create' %}" class="btn btn-success"> Добавить книгу</a>
 
 {% endblock %}

@@ -1,1 +1,5 @@
 {% extends 'core/index.html' %}
+{% block content %}
+    <a href="{% url 'core:book_update' object.pk %}">Изменить</a>
+    <a href="{% url 'core:book_delete' object.pk %}">Удалить</a>
+{% endblock %}
