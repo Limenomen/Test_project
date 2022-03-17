@@ -47,8 +47,8 @@ class Books(TitleMixin, ListView):
 
     def get_context_data(self):
         context = super().get_context_data()
-        # context['form'] = core.forms.BookSearch(self.request.GET or None)
-        context['filters'] = self.get_filters()
+        context['form'] = core.forms.BookSearch(self.request.GET or None)
+        # context['filters'] = self.get_filters()
         return context
 
 
