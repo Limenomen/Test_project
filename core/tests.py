@@ -12,7 +12,7 @@ class BookModel(TestCase):
     def testStr(self):
         self.assertEqual(
             str(self.book),
-            'Test Book',
+            'Test Book 123',
         )
 
 
