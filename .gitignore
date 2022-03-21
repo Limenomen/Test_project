@@ -4,3 +4,4 @@ venv
 /.coverage
 /htmlcov/
 /package-lock.json
+/node_modules/
