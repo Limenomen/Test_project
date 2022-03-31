@@ -1,5 +1,5 @@
+# ansible-playbook -i inv deploy.yml -e "POSTGRES_PASSWORD=test_project_superSecret"
 ---
-
 - hosts: "all"
   become: true
 
@@ -10,33 +10,89 @@
       state: "latest"
       update_cache: true
 
-  - name: "Install pip packages"
+  - name: Install pip packages
     pip:
       name: [ 'docker-py' ]
 
-  - name: "Pull docker image"
+  - name: Pull docker image
     shell: docker pull limenomen/test_project
 
-  - name: "Remove old container"
+  - name: Remove old container
     docker_container:
       name: test-project
       image: limenomen/test_project
       state: absent
 
-  - name: "Create directories"
+  - name: Create directories
     file: path={{ item }} state=directory mode=0700
     with_items:
-    - "/var/docker/test_project/conf"
     - "/var/docker/test_project/data"
+
+  - name: Create www directories
+    file: path={{ item }} state=directory owner=www-data
+    with_items:
+      - "/var/www/test_project/static"
+      - "/var/log/www/test_project"
+
+
+  - name: Start container db
+    docker_container:
+      name: test-project-db
+      image: postgres:13.1
+      volumes: "/var/docker/test_project/data/:/var/lib/postgresql/data/"
+      restart_policy: always
+      state: started
+      env:
+        POSTGRES_PASSWORD: "{{ POSTGRES_PASSWORD }}"
+        POSTGRES_USER: test_project
+        POSTGRES_NAME: test_project
+
 
   - name: Start container
     docker_container:
-      name: test_project
+      name: test-project
       image: limenomen/test_project
       restart_policy: always
       state: started
+      links:
+        - "test-project-db:db"
       ports:
-        - 0.0.0.0:8000:8000
+        - 127.0.0.1:8854:80
       volumes:
-        - "/var/docker/test_project/conf:/conf"
-        - "/var/docker/test_project/data:/data"
+        - "/var/www/test_project/static:/static"
+      env:
+        POSTGRESQL_PASS: "{{ POSTGRES_PASSWORD }}"
+
+  - name: Install npm
+    shell: docker exec -i test-project bash -c "npm install"
+
+#  - name: Collect static
+#    shell: docker exec -i test-project bash -c "python3 ./manage.py collectstatic --noinput"
+
+  - name: Copy npm packegs
+    shell: docker exec -i test-project bash -c "rm -rf static/node_modules; mv node_modules static/"
+
+
+  - name: Restart container
+    shell: docker restart test-project
+
+  - name: Set web static permissions
+    file:
+      path: /var/www/test_project/static
+      state: directory
+      owner: www-data
+      recurse: yes
+
+  - name: Wait test-project start
+    shell: sleep 2
+
+  - name: Migrate db
+    shell: docker exec -i test-project bash -c "python3 ./manage.py migrate"
+
+  - name: Create nginx config
+    template: src=nginx.jinja2 dest=/etc/nginx/sites-enabled/default
+    register: nginx_conf
+
+  - name: Restart nginx
+    service: name=nginx state=reloaded
+    when: nginx_conf.changed

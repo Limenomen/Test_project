@@ -3,3 +3,5 @@ django-bootstrap-v5==1.0.11
 django-filter==21.1
 coverage==6.3.2
 ansible==5.5.0
+psycopg2-binary==2.8.6
+gunicorn==20.0.4
