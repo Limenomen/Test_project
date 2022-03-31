@@ -1,0 +1,42 @@
+---
+
+- hosts: "all"
+  become: true
+
+  tasks:
+  - name: "Install packages"
+    apt:
+      name: ['nginx', 'docker.io', 'python3-pip']
+      state: "latest"
+      update_cache: true
+
+  - name: "Install pip packages"
+    pip:
+      name: [ 'docker-py' ]
+
+  - name: "Pull docker image"
+    shell: docker pull limenomen/test_project
+
+  - name: "Remove old container"
+    docker_container:
+      name: test-project
+      image: limenomen/test_project
+      state: absent
+
+  - name: "Create directories"
+    file: path={{ item }} state=directory mode=0700
+    with_items:
+    - "/var/docker/test_project/conf"
+    - "/var/docker/test_project/data"
+
+  - name: Start container
+    docker_container:
+      name: test_project
+      image: limenomen/test_project
+      restart_policy: always
+      state: started
+      ports:
+        - 0.0.0.0:8000:8000
+      volumes:
+        - "/var/docker/test_project/conf:/conf"
+        - "/var/docker/test_project/data:/data"
