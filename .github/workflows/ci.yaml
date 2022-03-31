@@ -23,9 +23,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+
     - name: Run Tests
       run: |
         coverage run --source='core' --omit='*migrations*,*tests*' manage.py test -v 2 core && coverage report
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
 
