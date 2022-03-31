@@ -66,8 +66,8 @@
   - name: Install npm
     shell: docker exec -i test-project bash -c "npm install"
 
-#  - name: Collect static
-#    shell: docker exec -i test-project bash -c "python3 ./manage.py collectstatic --noinput"
+  - name: Collect static
+    shell: docker exec -i test-project bash -c "python3 ./manage.py collectstatic --noinput"
 
   - name: Copy npm packegs
     shell: docker exec -i test-project bash -c "rm -rf static/node_modules; mv node_modules static/"
